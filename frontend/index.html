@@ -1,0 +1,2302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Multi-Cancer XAI Screening</title>
+
+<style>
+:root{
+    --bg:#f5f7fb;
+    --surface:#ffffff;
+    --surface-soft:#f8fafc;
+    --text:#172033;
+    --muted:#667085;
+    --border:#e3e8ef;
+    --primary:#3157d5;
+    --primary-dark:#2445b6;
+    --primary-soft:#eef2ff;
+    --success:#18864b;
+    --success-soft:#eaf8f0;
+    --warning:#a76405;
+    --warning-soft:#fff8e8;
+    --danger:#c23b3b;
+    --danger-soft:#fff0f0;
+    --shadow:0 8px 28px rgba(25,40,70,.07);
+    --radius:14px;
+}
+
+*{
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    margin:0;
+    font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.5;
+}
+
+/* HEADER */
+
+.topbar{
+    background:var(--surface);
+    border-bottom:1px solid var(--border);
+    position:sticky;
+    top:0;
+    z-index:50;
+}
+
+.topbar-inner{
+    max-width:1180px;
+    margin:auto;
+    padding:14px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.logo{
+    width:42px;
+    height:42px;
+    border-radius:12px;
+    background:var(--primary);
+    color:white;
+    display:grid;
+    place-items:center;
+    font-weight:700;
+    font-size:17px;
+}
+
+.brand h1{
+    margin:0;
+    font-size:18px;
+    line-height:1.2;
+}
+
+.brand p{
+    margin:3px 0 0;
+    color:var(--muted);
+    font-size:12px;
+}
+
+.status{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:7px 11px;
+    border-radius:999px;
+    background:var(--success-soft);
+    color:var(--success);
+    font-size:12px;
+    font-weight:600;
+}
+
+.status-dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:currentColor;
+}
+
+/* PAGE */
+
+.container{
+    max-width:1180px;
+    margin:auto;
+    padding:22px 20px 45px;
+}
+
+.notice{
+    background:var(--warning-soft);
+    border:1px solid #f0d99f;
+    border-radius:12px;
+    padding:12px 15px;
+    display:flex;
+    gap:11px;
+    margin-bottom:20px;
+    color:#75500b;
+    font-size:13px;
+}
+
+.notice strong{
+    display:block;
+    color:#624000;
+    margin-bottom:2px;
+}
+
+/* HERO */
+
+.hero{
+    margin-bottom:22px;
+}
+
+.hero h2{
+    font-size:27px;
+    margin:0 0 6px;
+    letter-spacing:-.5px;
+}
+
+.hero p{
+    color:var(--muted);
+    margin:0;
+    max-width:750px;
+}
+
+/* STATS */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+    margin:20px 0;
+}
+
+.stat{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:14px;
+}
+
+.stat-label{
+    color:var(--muted);
+    font-size:12px;
+}
+
+.stat-value{
+    font-size:20px;
+    font-weight:700;
+    margin-top:3px;
+}
+
+/* WORKFLOW */
+
+.workflow{
+    display:grid;
+    grid-template-columns:390px 1fr;
+    gap:16px;
+    align-items:start;
+}
+
+.card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+}
+
+.card-header{
+    padding:17px 18px 14px;
+    border-bottom:1px solid var(--border);
+}
+
+.card-header-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+}
+
+.card-title{
+    font-size:15px;
+    font-weight:700;
+}
+
+.step{
+    width:27px;
+    height:27px;
+    border-radius:8px;
+    display:grid;
+    place-items:center;
+    background:var(--primary-soft);
+    color:var(--primary);
+    font-size:12px;
+    font-weight:700;
+}
+
+.card-body{
+    padding:18px;
+}
+
+/* FORM */
+
+.field{
+    margin-bottom:16px;
+}
+
+label{
+    display:block;
+    font-size:12px;
+    font-weight:600;
+    margin-bottom:6px;
+}
+
+.help{
+    color:var(--muted);
+    font-size:11px;
+    margin-top:5px;
+}
+
+select,
+input[type=text]{
+    width:100%;
+    padding:10px 11px;
+    border:1px solid var(--border);
+    border-radius:9px;
+    background:white;
+    color:var(--text);
+    font:inherit;
+    outline:none;
+}
+
+select:focus,
+input:focus{
+    border-color:var(--primary);
+    box-shadow:0 0 0 3px var(--primary-soft);
+}
+
+/* MODEL INFO */
+
+.model-info{
+    background:var(--surface-soft);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:11px;
+    margin-top:9px;
+}
+
+.model-row{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    font-size:12px;
+}
+
+.model-row + .model-row{
+    margin-top:5px;
+}
+
+.model-row span:first-child{
+    color:var(--muted);
+}
+
+.good{
+    color:var(--success);
+    font-weight:600;
+}
+
+/* DROP AREA */
+
+.drop{
+    border:2px dashed #cbd3df;
+    border-radius:12px;
+    padding:24px 14px;
+    text-align:center;
+    cursor:pointer;
+    transition:.2s;
+    background:var(--surface-soft);
+}
+
+.drop:hover,
+.drop.drag{
+    border-color:var(--primary);
+    background:var(--primary-soft);
+}
+
+.upload-icon{
+    width:43px;
+    height:43px;
+    margin:0 auto 9px;
+    border-radius:12px;
+    background:var(--primary-soft);
+    color:var(--primary);
+    display:grid;
+    place-items:center;
+    font-size:21px;
+}
+
+.drop strong{
+    font-size:13px;
+}
+
+.drop p{
+    margin:3px 0 0;
+    color:var(--muted);
+    font-size:11px;
+}
+
+.file-selected{
+    margin-top:9px;
+    padding:9px;
+    border:1px solid var(--border);
+    border-radius:9px;
+    font-size:12px;
+    display:none;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+}
+
+.file-selected.show{
+    display:flex;
+}
+
+.file-name{
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+/* CHECK */
+
+.check-row{
+    display:flex;
+    gap:9px;
+    align-items:flex-start;
+    background:var(--surface-soft);
+    padding:11px;
+    border-radius:9px;
+}
+
+.check-row input{
+    margin-top:3px;
+}
+
+.check-row label{
+    margin:0;
+    cursor:pointer;
+}
+
+.check-row small{
+    display:block;
+    color:var(--muted);
+    font-weight:400;
+    margin-top:2px;
+}
+
+/* BUTTON */
+
+.primary{
+    width:100%;
+    border:0;
+    border-radius:10px;
+    padding:11px 14px;
+    background:var(--primary);
+    color:white;
+    font-weight:600;
+    font-size:14px;
+    cursor:pointer;
+    transition:.15s;
+}
+
+.primary:hover{
+    background:var(--primary-dark);
+}
+
+.primary:disabled{
+    opacity:.5;
+    cursor:not-allowed;
+}
+
+.secondary{
+    border:1px solid var(--border);
+    background:white;
+    color:var(--text);
+    border-radius:8px;
+    padding:8px 11px;
+    cursor:pointer;
+    font:inherit;
+    font-size:12px;
+}
+
+.danger{
+    color:var(--danger);
+}
+
+.error{
+    margin-top:10px;
+    color:var(--danger);
+    background:var(--danger-soft);
+    padding:9px 10px;
+    border-radius:8px;
+    font-size:12px;
+    display:none;
+}
+
+.error.show{
+    display:block;
+}
+
+/* VIEWER */
+
+.viewer-placeholder{
+    min-height:440px;
+    display:grid;
+    place-items:center;
+    text-align:center;
+    color:var(--muted);
+    padding:30px;
+}
+
+.placeholder-icon{
+    width:60px;
+    height:60px;
+    border-radius:15px;
+    background:var(--surface-soft);
+    display:grid;
+    place-items:center;
+    margin:auto auto 10px;
+    font-size:25px;
+}
+
+.viewer-content{
+    display:none;
+}
+
+.viewer-content.show{
+    display:block;
+}
+
+.tabs{
+    display:flex;
+    padding:8px;
+    gap:5px;
+    border-bottom:1px solid var(--border);
+}
+
+.tab{
+    width:auto;
+    border:0;
+    background:transparent;
+    border-radius:8px;
+    padding:8px 13px;
+    cursor:pointer;
+    color:var(--muted);
+    font-weight:600;
+}
+
+.tab.active{
+    background:var(--primary-soft);
+    color:var(--primary);
+}
+
+.image-wrap{
+    background:#111827;
+    min-height:400px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:15px;
+}
+
+.image-wrap img{
+    display:block;
+    max-width:100%;
+    max-height:480px;
+    object-fit:contain;
+    border-radius:5px;
+}
+
+.explain-text{
+    padding:12px 16px;
+    background:var(--surface-soft);
+    color:var(--muted);
+    font-size:12px;
+}
+
+/* LOADER */
+
+.loading{
+    min-height:440px;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+}
+
+.loading.show{
+    display:flex;
+}
+
+.spinner{
+    width:38px;
+    height:38px;
+    border:4px solid var(--border);
+    border-top-color:var(--primary);
+    border-radius:50%;
+    animation:spin .8s linear infinite;
+    margin:0 auto 12px;
+}
+
+@keyframes spin{
+    to{transform:rotate(360deg)}
+}
+
+/* RESULTS */
+
+.results{
+    margin-top:16px;
+    display:none;
+}
+
+.results.show{
+    display:block;
+}
+
+.result-grid{
+    display:grid;
+    grid-template-columns:300px 1fr;
+    gap:16px;
+}
+
+.prediction{
+    padding:20px;
+}
+
+.eyebrow{
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:.8px;
+    font-size:10px;
+    font-weight:700;
+}
+
+.predicted-class{
+    font-size:25px;
+    font-weight:750;
+    margin:6px 0 2px;
+    word-break:break-word;
+}
+
+.confidence{
+    font-size:13px;
+    color:var(--muted);
+}
+
+.confidence strong{
+    color:var(--primary);
+}
+
+.confidence-track{
+    margin-top:13px;
+    height:9px;
+    background:var(--border);
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.confidence-fill{
+    height:100%;
+    width:0;
+    background:var(--primary);
+    border-radius:20px;
+    transition:width .5s ease;
+}
+
+.change{
+    margin-top:15px;
+    font-size:11px;
+    color:var(--muted);
+}
+
+/* PROBABILITIES */
+
+.probabilities{
+    padding:20px;
+}
+
+.prob-item{
+    margin-top:12px;
+}
+
+.prob-top{
+    display:flex;
+    justify-content:space-between;
+    gap:15px;
+    font-size:12px;
+    margin-bottom:5px;
+}
+
+.prob-name{
+    font-weight:600;
+}
+
+.prob-value{
+    color:var(--muted);
+}
+
+.prob-track{
+    height:7px;
+    background:var(--border);
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.prob-fill{
+    height:100%;
+    background:var(--primary);
+    border-radius:20px;
+}
+
+/* HISTORY */
+
+.history{
+    margin-top:16px;
+}
+
+.history-controls{
+    display:flex;
+    gap:8px;
+}
+
+.table-wrap{
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:12px;
+}
+
+th{
+    text-align:left;
+    color:var(--muted);
+    font-weight:600;
+    padding:10px 12px;
+    background:var(--surface-soft);
+    border-bottom:1px solid var(--border);
+}
+
+td{
+    padding:11px 12px;
+    border-bottom:1px solid var(--border);
+}
+
+.empty{
+    text-align:center;
+    color:var(--muted);
+    padding:25px;
+}
+
+/* FOOTER */
+
+.footer{
+    margin-top:25px;
+    text-align:center;
+    color:var(--muted);
+    font-size:11px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:900px){
+    .workflow{
+        grid-template-columns:1fr;
+    }
+
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .result-grid{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:550px){
+    .topbar-inner{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+
+    .container{
+        padding:15px;
+    }
+
+    .hero h2{
+        font-size:22px;
+    }
+
+    .stats{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .history-controls{
+        flex-direction:column;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+    <div class="topbar-inner">
+
+        <div class="brand">
+            <div class="logo">XAI</div>
+
+            <div>
+                <h1>Multi-Cancer Explainable Screening</h1>
+                <p>MobileNetV2 • Grad-CAM • LIME</p>
+            </div>
+        </div>
+
+        <div class="status" id="systemStatus">
+            <span class="status-dot"></span>
+            <span id="statusText">Connecting...</span>
+        </div>
+
+    </div>
+</header>
+
+
+<main class="container">
+
+    <div class="notice">
+        <div>⚠</div>
+        <div>
+            <strong>Research prototype</strong>
+            This system is intended for academic research and demonstration.
+            It is not a medical device and must not be used for diagnosis or
+            treatment decisions.
+        </div>
+    </div>
+
+
+    <section class="hero">
+        <h2>Explainable image screening dashboard</h2>
+
+        <p>
+            Select a trained cancer-specific model, upload an image and inspect
+            the model prediction together with Grad-CAM and optional LIME
+            explanations.
+        </p>
+    </section>
+
+
+    <section class="stats">
+
+        <div class="stat">
+            <div class="stat-label">Models available</div>
+            <div class="stat-value" id="modelCount">—</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-label">Architecture</div>
+            <div class="stat-value">MobileNetV2</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-label">Input resolution</div>
+            <div class="stat-value">160 × 160</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-label">XAI methods</div>
+            <div class="stat-value">2</div>
+        </div>
+
+    </section>
+
+
+    <section class="workflow">
+
+        <!-- LEFT CONTROL PANEL -->
+
+        <div class="card">
+
+            <div class="card-header">
+                <div class="card-header-row">
+                    <div class="card-title">Configure analysis</div>
+                    <div class="step">1</div>
+                </div>
+            </div>
+
+
+            <div class="card-body">
+
+                <div class="field">
+
+                    <label for="type">Cancer model</label>
+
+                    <select id="type">
+                        <option value="">Loading models...</option>
+                    </select>
+
+                    <div class="model-info">
+
+                        <div class="model-row">
+                            <span>Status</span>
+                            <span class="good" id="modelStatus">—</span>
+                        </div>
+
+                        <div class="model-row">
+                            <span>Validation accuracy</span>
+                            <span id="modelAccuracy">—</span>
+                        </div>
+
+                        <div class="model-row">
+                            <span>Output classes</span>
+                            <span id="classCount">—</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="pid">Patient / sample ID</label>
+
+                    <input
+                        type="text"
+                        id="pid"
+                        maxlength="40"
+                        placeholder="e.g. SAMPLE-001"
+                    >
+
+                    <div class="help">
+                        Optional pseudonymous identifier. Avoid entering personal names.
+                    </div>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>Input image</label>
+
+                    <div class="drop" id="drop" tabindex="0">
+
+                        <div class="upload-icon">↑</div>
+
+                        <strong>Choose or drop an image</strong>
+
+                        <p>JPG, JPEG, PNG or another browser-supported image format</p>
+
+                        <input
+                            type="file"
+                            id="file"
+                            accept="image/*"
+                            hidden
+                        >
+
+                    </div>
+
+
+                    <div class="file-selected" id="fileInfo">
+
+                        <span class="file-name" id="fileName"></span>
+
+                        <button
+                            class="secondary"
+                            type="button"
+                            id="changeFile"
+                        >
+                            Change
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="field">
+
+                    <div class="check-row">
+
+                        <input type="checkbox" id="lime">
+
+                        <label for="lime">
+                            Include LIME explanation
+
+                            <small>
+                                Produces an additional local explanation but increases processing time.
+                            </small>
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+                <button class="primary" id="go" disabled>
+                    Analyse image
+                </button>
+
+
+                <div class="error" id="err"></div>
+
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT VIEWER -->
+
+        <div class="card">
+
+            <div class="card-header">
+                <div class="card-header-row">
+                    <div class="card-title">Image & explanation</div>
+                    <div class="step">2</div>
+                </div>
+            </div>
+
+
+            <div id="placeholder" class="viewer-placeholder">
+
+                <div>
+                    <div class="placeholder-icon">▧</div>
+
+                    <strong>No image selected</strong>
+
+                    <div class="help">
+                        Upload an image from the analysis panel to begin.
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="loading" id="loading">
+
+                <div>
+                    <div class="spinner"></div>
+
+                    <strong id="loadingTitle">Running model inference...</strong>
+
+                    <div class="help" id="loadingText">
+                        Generating prediction and Grad-CAM explanation.
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="viewer-content" id="viewer">
+
+                <div class="tabs">
+
+                    <button
+                        class="tab active"
+                        data-view="in"
+                    >
+                        Input
+                    </button>
+
+                    <button
+                        class="tab"
+                        data-view="cam"
+                    >
+                        Grad-CAM
+                    </button>
+
+                    <button
+                        class="tab"
+                        data-view="lime"
+                    >
+                        LIME
+                    </button>
+
+                </div>
+
+
+                <div class="image-wrap">
+                    <img id="displayImage" alt="Analysis image">
+                </div>
+
+
+                <div class="explain-text" id="explanationText">
+                    Original uploaded image.
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- RESULTS -->
+
+    <section class="results" id="results">
+
+        <div class="result-grid">
+
+            <div class="card prediction">
+
+                <div class="eyebrow">Model prediction</div>
+
+                <div
+                    class="predicted-class"
+                    id="prediction"
+                >
+                    —
+                </div>
+
+                <div class="confidence">
+                    Confidence:
+                    <strong id="confidence">—</strong>
+                </div>
+
+                <div class="confidence-track">
+                    <div
+                        class="confidence-fill"
+                        id="confidenceFill"
+                    ></div>
+                </div>
+
+                <div class="change" id="change"></div>
+
+            </div>
+
+
+            <div class="card probabilities">
+
+                <div class="card-title">
+                    Class probabilities
+                </div>
+
+                <div id="probabilities"></div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- HISTORY -->
+
+    <section class="card history">
+
+        <div class="card-header">
+
+            <div class="card-header-row">
+
+                <div>
+
+                    <div class="card-title">
+                        Monitoring history
+                    </div>
+
+                    <div class="help">
+                        Prediction metadata stored for the pseudonymous ID.
+                        Uploaded images are not stored by this interface.
+                    </div>
+
+                </div>
+
+
+                <div class="history-controls">
+
+                    <button
+                        class="secondary"
+                        id="loadHistory"
+                    >
+                        Refresh history
+                    </button>
+
+                    <button
+                        class="secondary danger"
+                        id="deleteHistory"
+                    >
+                        Delete history
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Time (UTC)</th>
+                        <th>Model</th>
+                        <th>Prediction</th>
+                        <th>Confidence</th>
+                        <th>Attention area</th>
+                    </tr>
+                </thead>
+
+                <tbody id="historyBody">
+
+                    <tr>
+                        <td colspan="5" class="empty">
+                            Enter a sample ID and select “Refresh history”.
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <div class="footer">
+        Explainable AI-Based Cancer Risk Prediction and Monitoring System • Academic Research Prototype
+    </div>
+
+</main>
+
+
+<script>
+
+const $ = id => document.getElementById(id);
+
+let cancers = [];
+let selectedFile = null;
+
+let images = {
+    in:null,
+    cam:null,
+    lime:null
+};
+
+
+/* --------------------------------
+   UTILITIES
+-------------------------------- */
+
+function pct(value){
+    return (value * 100).toFixed(1) + "%";
+}
+
+
+function friendlyClass(name){
+
+    if(!name) return "";
+
+    const abbreviations = {
+        "aca":"Adenocarcinoma",
+        "bnt":"Benign Tissue",
+        "scc":"Squamous Cell Carcinoma",
+        "cll":"Chronic Lymphocytic Leukemia",
+        "fl":"Follicular Lymphoma",
+        "mcl":"Mantle Cell Lymphoma"
+    };
+
+    let parts = name.split("_");
+
+    parts = parts.map(part => {
+
+        if(abbreviations[part])
+            return abbreviations[part];
+
+        return part.charAt(0).toUpperCase() +
+               part.slice(1);
+
+    });
+
+    return parts.join(" ");
+}
+
+
+function showError(message){
+
+    const box = $("err");
+
+    box.textContent = message || "";
+    box.classList.toggle("show", Boolean(message));
+
+}
+
+
+function clearError(){
+    showError("");
+}
+
+
+/* --------------------------------
+   INITIALIZATION
+-------------------------------- */
+
+async function init(){
+
+    try{
+
+        const response =
+            await fetch("/api/cancers");
+
+
+        if(!response.ok)
+            throw new Error("Backend could not be reached.");
+
+
+        const data =
+            await response.json();
+
+
+        cancers =
+            data.cancers || [];
+
+
+        const available =
+            cancers.filter(c => c.available);
+
+
+        $("modelCount").textContent =
+            available.length + " / " + cancers.length;
+
+
+        $("statusText").textContent =
+            available.length
+                ? "Models ready"
+                : "No models available";
+
+
+        const select =
+            $("type");
+
+
+        select.replaceChildren();
+
+
+        available.forEach(cancer => {
+
+            select.add(
+                new Option(
+                    cancer.name,
+                    cancer.name
+                )
+            );
+
+        });
+
+
+        if(!available.length){
+
+            select.add(
+                new Option(
+                    "No trained models found",
+                    ""
+                )
+            );
+
+            $("go").disabled = true;
+
+            return;
+
+        }
+
+
+        updateModelInfo();
+
+    }
+    catch(error){
+
+        $("statusText").textContent =
+            "Backend unavailable";
+
+        showError(error.message);
+
+    }
+
+}
+
+
+/* --------------------------------
+   MODEL INFORMATION
+-------------------------------- */
+
+function updateModelInfo(){
+
+    const cancer =
+        cancers.find(
+            c => c.name === $("type").value
+        );
+
+
+    if(!cancer){
+
+        $("modelStatus").textContent = "—";
+        $("modelAccuracy").textContent = "—";
+        $("classCount").textContent = "—";
+
+        return;
+
+    }
+
+
+    $("modelStatus").textContent =
+        cancer.available
+            ? "Model ready"
+            : "Unavailable";
+
+
+    $("modelAccuracy").textContent =
+        cancer.val_acc != null
+            ? pct(cancer.val_acc)
+            : "Not provided";
+
+
+    $("classCount").textContent =
+        cancer.classes
+            ? cancer.classes.length
+            : "—";
+
+}
+
+
+$("type").addEventListener(
+    "change",
+    updateModelInfo
+);
+
+
+/* --------------------------------
+   FILE SELECTION
+-------------------------------- */
+
+const drop =
+    $("drop");
+
+const fileInput =
+    $("file");
+
+
+drop.addEventListener(
+    "click",
+    () => fileInput.click()
+);
+
+
+drop.addEventListener(
+    "keydown",
+    event => {
+
+        if(
+            event.key === "Enter" ||
+            event.key === " "
+        ){
+
+            event.preventDefault();
+            fileInput.click();
+
+        }
+
+    }
+);
+
+
+fileInput.addEventListener(
+    "change",
+    () => {
+
+        if(fileInput.files[0])
+            setFile(fileInput.files[0]);
+
+    }
+);
+
+
+$("changeFile").addEventListener(
+    "click",
+    event => {
+
+        event.stopPropagation();
+        fileInput.click();
+
+    }
+);
+
+
+["dragenter","dragover"].forEach(
+    eventName => {
+
+        drop.addEventListener(
+            eventName,
+            event => {
+
+                event.preventDefault();
+
+                drop.classList.add("drag");
+
+            }
+        );
+
+    }
+);
+
+
+["dragleave","drop"].forEach(
+    eventName => {
+
+        drop.addEventListener(
+            eventName,
+            event => {
+
+                event.preventDefault();
+
+                drop.classList.remove("drag");
+
+            }
+        );
+
+    }
+);
+
+
+drop.addEventListener(
+    "drop",
+    event => {
+
+        const file =
+            event.dataTransfer.files[0];
+
+        if(file)
+            setFile(file);
+
+    }
+);
+
+
+function setFile(file){
+
+    clearError();
+
+
+    if(
+        !file ||
+        !file.type.startsWith("image/")
+    ){
+
+        showError(
+            "Please choose a valid image file."
+        );
+
+        return;
+
+    }
+
+
+    selectedFile =
+        file;
+
+
+    $("fileName").textContent =
+        file.name;
+
+
+    $("fileInfo")
+        .classList
+        .add("show");
+
+
+    if(images.in &&
+       images.in.startsWith("blob:")){
+
+        URL.revokeObjectURL(images.in);
+
+    }
+
+
+    images = {
+        in:URL.createObjectURL(file),
+        cam:null,
+        lime:null
+    };
+
+
+    $("go").disabled = false;
+
+
+    $("placeholder").style.display =
+        "none";
+
+
+    $("loading")
+        .classList
+        .remove("show");
+
+
+    $("viewer")
+        .classList
+        .add("show");
+
+
+    $("results")
+        .classList
+        .remove("show");
+
+
+    showView("in");
+
+}
+
+
+/* --------------------------------
+   EXPLANATION VIEW
+-------------------------------- */
+
+document
+    .querySelectorAll(".tab")
+    .forEach(button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                showView(
+                    button.dataset.view
+                );
+
+            }
+        );
+
+    }
+);
+
+
+function showView(view){
+
+    document
+        .querySelectorAll(".tab")
+        .forEach(button => {
+
+            button.classList.toggle(
+                "active",
+                button.dataset.view === view
+            );
+
+        });
+
+
+    const image =
+        images[view];
+
+
+    if(image){
+
+        $("displayImage").src =
+            image;
+
+    }
+    else if(view === "lime"){
+
+        showError(
+            "LIME was not generated. Enable 'Include LIME explanation' and analyse the image again."
+        );
+
+        return;
+
+    }
+    else{
+
+        return;
+
+    }
+
+
+    if(view === "in"){
+
+        $("explanationText").textContent =
+            images.cam
+            ? "Original input image. The model processes a resized 160 × 160 representation."
+            : "Original uploaded image.";
+
+    }
+
+
+    if(view === "cam"){
+
+        $("explanationText").textContent =
+            "Grad-CAM visualizes image regions that influenced the selected model output. Warmer regions indicate stronger model attention.";
+
+    }
+
+
+    if(view === "lime"){
+
+        $("explanationText").textContent =
+            "LIME provides a local explanation by identifying image regions that contributed to this particular model prediction.";
+
+    }
+
+}
+
+
+/* --------------------------------
+   ANALYSIS
+-------------------------------- */
+
+$("go").addEventListener(
+    "click",
+    analyse
+);
+
+
+async function analyse(){
+
+    clearError();
+
+
+    if(!selectedFile){
+
+        showError(
+            "Please upload an image first."
+        );
+
+        return;
+
+    }
+
+
+    const cancer =
+        $("type").value;
+
+
+    if(!cancer){
+
+        showError(
+            "Please select a cancer model."
+        );
+
+        return;
+
+    }
+
+
+    $("go").disabled =
+        true;
+
+
+    $("go").textContent =
+        "Analysing...";
+
+
+    $("viewer")
+        .classList
+        .remove("show");
+
+
+    $("placeholder").style.display =
+        "none";
+
+
+    $("loading")
+        .classList
+        .add("show");
+
+
+    if($("lime").checked){
+
+        $("loadingTitle").textContent =
+            "Generating prediction and explanations...";
+
+        $("loadingText").textContent =
+            "LIME requires additional perturbation analysis and may take longer.";
+
+    }
+    else{
+
+        $("loadingTitle").textContent =
+            "Running model inference...";
+
+        $("loadingText").textContent =
+            "Generating prediction and Grad-CAM explanation.";
+
+    }
+
+
+    const form =
+        new FormData();
+
+
+    /*
+       These names MUST remain unchanged.
+       They match the FastAPI endpoint.
+    */
+
+    form.set(
+        "file",
+        selectedFile,
+        selectedFile.name
+    );
+
+
+    form.set(
+        "cancer",
+        cancer
+    );
+
+
+    form.set(
+        "patient_id",
+        $("pid").value.trim()
+    );
+
+
+    form.set(
+        "lime",
+        $("lime").checked
+            ? "true"
+            : "false"
+    );
+
+
+    try{
+
+        const response =
+            await fetch(
+                "/api/predict",
+                {
+                    method:"POST",
+                    body:form
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if(!response.ok){
+
+            const message =
+                typeof data.detail === "string"
+                    ? data.detail
+                    : JSON.stringify(
+                        data.detail || data
+                    );
+
+            throw new Error(message);
+
+        }
+
+
+        images.in =
+            "data:image/png;base64," +
+            data.input_png;
+
+
+        images.cam =
+            "data:image/png;base64," +
+            data.gradcam_png;
+
+
+        images.lime =
+            data.lime_png
+                ? "data:image/png;base64," +
+                  data.lime_png
+                : null;
+
+
+        displayResults(data);
+
+
+        $("loading")
+            .classList
+            .remove("show");
+
+
+        $("viewer")
+            .classList
+            .add("show");
+
+
+        showView("cam");
+
+
+        if($("pid").value.trim())
+            loadHistory();
+
+
+    }
+    catch(error){
+
+        $("loading")
+            .classList
+            .remove("show");
+
+
+        $("viewer")
+            .classList
+            .add("show");
+
+
+        showView("in");
+
+        showError(error.message);
+
+    }
+    finally{
+
+        $("go").disabled =
+            false;
+
+
+        $("go").textContent =
+            "Analyse image";
+
+    }
+
+}
+
+
+/* --------------------------------
+   RESULTS
+-------------------------------- */
+
+function displayResults(data){
+
+    $("results")
+        .classList
+        .add("show");
+
+
+    $("prediction").textContent =
+        friendlyClass(
+            data.predicted
+        );
+
+
+    $("confidence").textContent =
+        pct(data.confidence);
+
+
+    $("confidenceFill").style.width =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                data.confidence * 100
+            )
+        ) + "%";
+
+
+    const change =
+        data.change_vs_previous;
+
+
+    if(change){
+
+        const confidenceDelta =
+            (
+                change.confidence_delta *
+                100
+            ).toFixed(1);
+
+
+        const attentionDelta =
+            (
+                change.attention_area_delta *
+                100
+            ).toFixed(1);
+
+
+        $("change").textContent =
+            "Previous record: " +
+            (
+                change.class_changed
+                    ? "prediction changed from " +
+                      friendlyClass(
+                          change.previous_class
+                      )
+                    : "same predicted class"
+            ) +
+            ". Confidence change: " +
+            (
+                change.confidence_delta >= 0
+                    ? "+"
+                    : ""
+            ) +
+            confidenceDelta +
+            " points. Attention-area change: " +
+            (
+                change.attention_area_delta >= 0
+                    ? "+"
+                    : ""
+            ) +
+            attentionDelta +
+            " points.";
+
+    }
+    else{
+
+        $("change").textContent =
+            $("pid").value.trim()
+                ? "No earlier record was available for comparison."
+                : "Add a pseudonymous sample ID to enable monitoring comparisons.";
+
+    }
+
+
+    const container =
+        $("probabilities");
+
+
+    container.replaceChildren();
+
+
+    Object
+        .entries(data.probabilities)
+        .sort(
+            (a,b) => b[1] - a[1]
+        )
+        .forEach(
+            ([name,value]) => {
+
+                const item =
+                    document.createElement("div");
+
+
+                item.className =
+                    "prob-item";
+
+
+                const top =
+                    document.createElement("div");
+
+
+                top.className =
+                    "prob-top";
+
+
+                const className =
+                    document.createElement("span");
+
+
+                className.className =
+                    "prob-name";
+
+
+                className.textContent =
+                    friendlyClass(name);
+
+
+                const probability =
+                    document.createElement("span");
+
+
+                probability.className =
+                    "prob-value";
+
+
+                probability.textContent =
+                    pct(value);
+
+
+                top.append(
+                    className,
+                    probability
+                );
+
+
+                const track =
+                    document.createElement("div");
+
+
+                track.className =
+                    "prob-track";
+
+
+                const fill =
+                    document.createElement("div");
+
+
+                fill.className =
+                    "prob-fill";
+
+
+                fill.style.width =
+                    Math.max(
+                        0,
+                        Math.min(
+                            100,
+                            value * 100
+                        )
+                    ) + "%";
+
+
+                track.append(fill);
+
+
+                item.append(
+                    top,
+                    track
+                );
+
+
+                container.append(item);
+
+            }
+        );
+
+}
+
+
+/* --------------------------------
+   HISTORY
+-------------------------------- */
+
+$("loadHistory").addEventListener(
+    "click",
+    loadHistory
+);
+
+
+async function loadHistory(){
+
+    clearError();
+
+
+    const pid =
+        $("pid").value.trim();
+
+
+    const body =
+        $("historyBody");
+
+
+    body.replaceChildren();
+
+
+    if(!pid){
+
+        showHistoryMessage(
+            "Enter a pseudonymous sample ID first."
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+                "/api/history?patient_id=" +
+                encodeURIComponent(pid)
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if(!response.ok){
+
+            throw new Error(
+                data.detail ||
+                "Unable to load history."
+            );
+
+        }
+
+
+        if(!data.records.length){
+
+            showHistoryMessage(
+                "No monitoring records found for this ID."
+            );
+
+            return;
+
+        }
+
+
+        data.records.forEach(record => {
+
+            const row =
+                document.createElement("tr");
+
+
+            [
+                record.created_at
+                    .replace("T"," ")
+                    .slice(0,19),
+
+                record.cancer,
+
+                friendlyClass(
+                    record.pred_class
+                ),
+
+                pct(record.confidence),
+
+                pct(record.attn_area)
+
+            ].forEach(value => {
+
+                const cell =
+                    document.createElement("td");
+
+
+                cell.textContent =
+                    value;
+
+
+                row.append(cell);
+
+            });
+
+
+            body.append(row);
+
+        });
+
+    }
+    catch(error){
+
+        showHistoryMessage(
+            error.message
+        );
+
+    }
+
+}
+
+
+function showHistoryMessage(message){
+
+    const body =
+        $("historyBody");
+
+
+    body.replaceChildren();
+
+
+    const row =
+        document.createElement("tr");
+
+
+    const cell =
+        document.createElement("td");
+
+
+    cell.colSpan =
+        5;
+
+
+    cell.className =
+        "empty";
+
+
+    cell.textContent =
+        message;
+
+
+    row.append(cell);
+
+    body.append(row);
+
+}
+
+
+/* --------------------------------
+   DELETE HISTORY
+-------------------------------- */
+
+$("deleteHistory").addEventListener(
+    "click",
+    async () => {
+
+        clearError();
+
+
+        const pid =
+            $("pid").value.trim();
+
+
+        if(!pid){
+
+            showError(
+                "Enter a pseudonymous sample ID before deleting history."
+            );
+
+            return;
+
+        }
+
+
+        if(
+            !confirm(
+                "Delete all monitoring records for " +
+                pid +
+                "?"
+            )
+        ){
+            return;
+        }
+
+
+        try{
+
+            const response =
+                await fetch(
+                    "/api/history/" +
+                    encodeURIComponent(pid),
+                    {
+                        method:"DELETE"
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if(!response.ok){
+
+                throw new Error(
+                    data.detail ||
+                    "Unable to delete history."
+                );
+
+            }
+
+
+            showHistoryMessage(
+                "Monitoring history deleted."
+            );
+
+        }
+        catch(error){
+
+            showError(
+                error.message
+            );
+
+        }
+
+    }
+);
+
+
+/* START */
+
+init();
+
+</script>
+
+</body>
+</html>

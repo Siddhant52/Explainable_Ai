@@ -1,0 +1,71 @@
+{
+  "demo": false,
+  "cancers": {
+    "ALL": {
+      "classes": [
+        "all_benign",
+        "all_early",
+        "all_pre",
+        "all_pro"
+      ],
+      "val_acc": 0.9998
+    },
+    "Brain Cancer": {
+      "classes": [
+        "brain_glioma",
+        "brain_menin",
+        "brain_tumor"
+      ],
+      "val_acc": 0.919
+    },
+    "Breast Cancer": {
+      "classes": [
+        "breast_benign",
+        "breast_malignant"
+      ],
+      "val_acc": 0.9955
+    },
+    "Cervical Cancer": {
+      "classes": [
+        "cervix_dyk",
+        "cervix_koc",
+        "cervix_mep",
+        "cervix_pab",
+        "cervix_sfi"
+      ],
+      "val_acc": 0.999
+    },
+    "Kidney Cancer": {
+      "classes": [
+        "kidney_normal",
+        "kidney_tumor"
+      ],
+      "val_acc": 0.998
+    },
+    "Lung and Colon Cancer": {
+      "classes": [
+        "colon_aca",
+        "colon_bnt",
+        "lung_aca",
+        "lung_bnt",
+        "lung_scc"
+      ],
+      "val_acc": 0.9958
+    },
+    "Lymphoma": {
+      "classes": [
+        "lymph_cll",
+        "lymph_fl",
+        "lymph_mcl"
+      ],
+      "val_acc": 0.889
+    },
+    "Oral Cancer": {
+      "classes": [
+        "oral_normal",
+        "oral_scc"
+      ],
+      "val_acc": 0.9705
+    }
+  }
+}

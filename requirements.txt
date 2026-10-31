@@ -1,0 +1,12 @@
+tensorflow>=2.16
+fastapi
+uvicorn[standard]
+python-multipart
+pillow
+numpy
+opencv-python-headless
+lime
+scikit-image
+scikit-learn
+pytest
+httpx
